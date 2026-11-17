@@ -14,13 +14,12 @@ export function addTask(tasks: Task[], title: string): Task[] {
 }
 
 export function completeTask(tasks: Task[], id: number): Task[] {
-  const completeTaskIndex = tasks.findIndex((task) => task.id === id);
-  if (completeTaskIndex === -1) {
+  if (!tasks.some((task) => task.id === id)) {
     throw new RangeError(`Task ${id} not found`);
   }
-  const newList = [...tasks];
-  newList[completeTaskIndex] = { ...tasks[completeTaskIndex], done: true };
-  return newList;
+  return [...tasks].map((task) =>
+    task.id === id ? { ...task, done: true } : task,
+  );
 }
 
 export function removeTask(tasks: Task[], id: number): Task[] {

@@ -4,7 +4,7 @@ import { addTask, completeTask, removeTask, formatTasks } from "./tasks.ts";
 
 describe("addTask", () => {
   test("adds a task to an empty list", () => {
-    assert.equal(addTask([], "Buy milk")[0].id, 1);
+    assert.equal(addTask([], "Buy milk")[0]?.id, 1);
   });
 
   test("uses max id + 1", () => {
@@ -12,7 +12,7 @@ describe("addTask", () => {
       { id: 1, title: "Buy bread", done: false },
       { id: 5, title: "Check your email", done: false },
     ];
-    assert.equal(addTask(tasks, "Buy eggs")[2].id, 6);
+    assert.equal(addTask(tasks, "Buy eggs")[2]?.id, 6);
   });
 
   test("uses max id + 1 when ids are not sorted", () => {
@@ -20,7 +20,7 @@ describe("addTask", () => {
       { id: 5, title: "Call Grandma", done: false },
       { id: 1, title: "Do the lab assignment", done: false },
     ];
-    assert.equal(addTask(tasks, "Buy eggs")[2].id, 6);
+    assert.equal(addTask(tasks, "Buy eggs")[2]?.id, 6);
   });
 
   test("does not mutate the original array", () => {
@@ -33,7 +33,7 @@ describe("addTask", () => {
   });
 
   test("trims the title", () => {
-    assert.equal(addTask([], " Buy cigarettes ")[0].title, "Buy cigarettes");
+    assert.equal(addTask([], " Buy cigarettes ")[0]?.title, "Buy cigarettes");
   });
 
   test("throws TypeError for an empty title", () => {
@@ -49,7 +49,7 @@ describe("completeTask", () => {
       { id: 4, title: "Buy eggs", done: false },
     ];
     const markedTasks = completeTask(tasks, 5);
-    assert.equal(markedTasks[0].done, true);
+    assert.equal(markedTasks[0]?.done, true);
   });
 
   test("does not change other tasks", () => {
@@ -58,7 +58,7 @@ describe("completeTask", () => {
       { id: 4, title: "Buy eggs", done: false },
     ];
     const markedTasks = completeTask(tasks, 5);
-    assert.equal(markedTasks[1].done, false);
+    assert.equal(markedTasks[1]?.done, false);
   });
 
   test("does not mutate the original task", () => {
@@ -67,7 +67,7 @@ describe("completeTask", () => {
       { id: 4, title: "Buy eggs", done: false },
     ];
     completeTask(tasks, 5);
-    assert.equal(tasks[0].done, false);
+    assert.equal(tasks[0]?.done, false);
   });
 
   test("throws RangeError for an unknown id", () => {
