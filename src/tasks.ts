@@ -17,9 +17,7 @@ export function completeTask(tasks: Task[], id: number): Task[] {
   if (!tasks.some((task) => task.id === id)) {
     throw new RangeError(`Task ${id} not found`);
   }
-  return [...tasks].map((task) =>
-    task.id === id ? { ...task, done: true } : task,
-  );
+  return tasks.map((task) => (task.id === id ? { ...task, done: true } : task));
 }
 
 export function removeTask(tasks: Task[], id: number): Task[] {
