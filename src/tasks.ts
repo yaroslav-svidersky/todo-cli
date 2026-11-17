@@ -12,3 +12,13 @@ export function addTask(tasks: Task[], title: string): Task[] {
     tasks.length === 0 ? 0 : Math.max(...tasks.map((task) => task.id));
   return [...tasks, { id: highestID + 1, title: title.trim(), done: false }];
 }
+
+export function completeTask(tasks: Task[], id: number): Task[] {
+  const completeTaskIndex = tasks.findIndex((task) => task.id === id);
+  if (completeTaskIndex === -1) {
+    throw new RangeError(`Task ${id} not found`);
+  }
+  const newList = [...tasks];
+  newList[completeTaskIndex] = { ...tasks[completeTaskIndex], done: true };
+  return newList;
+}

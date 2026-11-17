@@ -1,6 +1,6 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { addTask } from "./tasks.ts";
+import { addTask, completeTask } from "./tasks.ts";
 
 describe("addTask", () => {
   test("adds a task to an empty list", () => {
@@ -39,5 +39,39 @@ describe("addTask", () => {
   test("throws TypeError for an empty title", () => {
     assert.throws(() => addTask([], ""), TypeError);
     assert.throws(() => addTask([], "   "), TypeError);
+  });
+});
+
+describe("completeTask", () => {
+  test("marks the task as done", () => {
+    const tasks = [
+      { id: 5, title: "Buy bread", done: false },
+      { id: 4, title: "Buy eggs", done: false },
+    ];
+    const markedTasks = completeTask(tasks, 5);
+    assert.equal(markedTasks[0].done, true);
+  });
+
+  test("does not change other tasks", () => {
+    const tasks = [
+      { id: 5, title: "Buy bread", done: false },
+      { id: 4, title: "Buy eggs", done: false },
+    ];
+    const markedTasks = completeTask(tasks, 5);
+    assert.equal(markedTasks[1].done, false);
+  });
+
+  test("does not mutate the original task", () => {
+    const tasks = [
+      { id: 5, title: "Buy bread", done: false },
+      { id: 4, title: "Buy eggs", done: false },
+    ];
+    completeTask(tasks, 5);
+    assert.equal(tasks[0].done, false);
+  });
+
+  test("throws RangeError for an unknown id", () => {
+    const tasks = [{ id: 3, title: "Buy bread", done: false }];
+    assert.throws(() => completeTask(tasks, 5), RangeError);
   });
 });
