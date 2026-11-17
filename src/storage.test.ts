@@ -40,4 +40,11 @@ describe("loadTasks&saveTasks", () => {
       message: `Invalid tasks file: ${filePath}`,
     });
   });
+
+  test("rejects with TypeError when a task is invalid", async () => {
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "todo-"));
+    const filePath = path.join(dir, "tasks.json");
+    await fs.writeFile(filePath, '[{"id": 1, "title": "Buy bread"}]');
+    await assert.rejects(() => loadTasks(filePath), TypeError);
+  });
 });
