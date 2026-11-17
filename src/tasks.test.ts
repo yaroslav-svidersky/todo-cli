@@ -1,6 +1,6 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { addTask, completeTask } from "./tasks.ts";
+import { addTask, completeTask, removeTask, formatTasks } from "./tasks.ts";
 
 describe("addTask", () => {
   test("adds a task to an empty list", () => {
@@ -73,5 +73,91 @@ describe("completeTask", () => {
   test("throws RangeError for an unknown id", () => {
     const tasks = [{ id: 3, title: "Buy bread", done: false }];
     assert.throws(() => completeTask(tasks, 5), RangeError);
+  });
+});
+
+describe("removeTask", () => {
+  test("removes a task from the list by ID", () => {
+    const tasks = [
+      { id: 4, title: "Call Grandma", done: false },
+      { id: 2, title: "Adjust the clock", done: false },
+    ];
+    assert.deepEqual(removeTask(tasks, 4), [
+      { id: 2, title: "Adjust the clock", done: false },
+    ]);
+  });
+
+  test("returns a new array upon deletion", () => {
+    const tasks = [
+      { id: 3, title: "Buy bread", done: false },
+      { id: 5, title: "Buy eggs", done: false },
+    ];
+    assert.deepEqual(removeTask(tasks, 5), [
+      { id: 3, title: "Buy bread", done: false },
+    ]);
+    assert.deepEqual(tasks[1], { id: 5, title: "Buy eggs", done: false });
+  });
+
+  test("does not mutate the original array", () => {
+    const tasks = [
+      { id: 1, title: "Do the lab assignment", done: false },
+      { id: 3, title: "Buy bread", done: false },
+      { id: 2, title: "Adjust the clock", done: false },
+    ];
+    removeTask(tasks, 3);
+    assert.deepEqual(tasks, [
+      { id: 1, title: "Do the lab assignment", done: false },
+      { id: 3, title: "Buy bread", done: false },
+      { id: 2, title: "Adjust the clock", done: false },
+    ]);
+  });
+
+  test("throws an error if the ID is unknown", () => {
+    const tasks = [
+      { id: 2, title: "Adjust the clock", done: false },
+      { id: 1, title: "Do the lab assignment", done: false },
+      { id: 3, title: "Buy bread", done: false },
+    ];
+    assert.throws(() => removeTask(tasks, 4), RangeError);
+  });
+});
+
+describe("formatTasks", () => {
+  test("formats an undone task", () => {
+    assert.equal(
+      formatTasks([{ id: 1, title: "Buy salt", done: false }]),
+      "[ ] 1. Buy salt",
+    );
+  });
+
+  test("formats a done task", () => {
+    const tasks = [{ id: 2, title: "Take out the trash", done: true }];
+    assert.equal(formatTasks(tasks), "[x] 2. Take out the trash");
+  });
+
+  test("uses task id, not position", () => {
+    const tasks = [
+      { id: 5, title: "Take out the trash", done: true },
+      { id: 2, title: "Buy salt", done: false },
+    ];
+    assert.equal(
+      formatTasks(tasks),
+      `[x] 5. Take out the trash\n[ ] 2. Buy salt`,
+    );
+  });
+
+  test("joins tasks with newlines", () => {
+    const tasks = [
+      { id: 2, title: "Buy salt", done: false },
+      { id: 5, title: "Take out the trash", done: true },
+    ];
+    assert.equal(
+      formatTasks(tasks),
+      "[ ] 2. Buy salt\n[x] 5. Take out the trash",
+    );
+  });
+
+  test('returns "No tasks" for an empty list', () => {
+    assert.equal(formatTasks([]), "No tasks");
   });
 });

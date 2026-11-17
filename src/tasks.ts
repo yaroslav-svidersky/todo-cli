@@ -22,3 +22,20 @@ export function completeTask(tasks: Task[], id: number): Task[] {
   newList[completeTaskIndex] = { ...tasks[completeTaskIndex], done: true };
   return newList;
 }
+
+export function removeTask(tasks: Task[], id: number): Task[] {
+  if (!tasks.some((task) => task.id === id)) {
+    throw new RangeError(`Task ${id} not found`);
+  }
+  return tasks.filter((task) => task.id !== id);
+}
+
+export function formatTasks(tasks: Task[]): string {
+  if (tasks.length === 0) {
+    return "No tasks";
+  }
+  const listTitles = tasks
+    .map((task) => `${task.done ? "[x]" : "[ ]"} ${task.id}. ${task.title}`)
+    .join("\n");
+  return listTitles;
+}
