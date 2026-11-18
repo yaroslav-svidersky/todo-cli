@@ -4,6 +4,7 @@
     "module": "nodenext",
     "types": ["node"],
     "strict": true,
+    "noUncheckedIndexedAccess": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
