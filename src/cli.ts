@@ -17,6 +17,12 @@ function parseId(arg: string | undefined): number {
   return id;
 }
 
+function checkArgCount(args: string[], maxArgs: number, hint: string): void {
+  if (args.length > maxArgs) {
+    throw new Error("Too many arguments. " + hint);
+  }
+}
+
 async function main(): Promise<void> {
   try {
     const [command, ...args] = process.argv.slice(2);
@@ -24,6 +30,11 @@ async function main(): Promise<void> {
       const tasks = await loadTasks(filePath);
       console.log(formatTasks(tasks));
     } else if (command === "add") {
+      checkArgCount(
+        args,
+        1,
+        `Put the title in quotes: add "${args.join(" ")}"`,
+      );
       const title = args[0];
       if (title === undefined) {
         throw new Error("No task title specified after the add command");
@@ -36,11 +47,21 @@ async function main(): Promise<void> {
       }
       console.log(`Added task ${task.id}`);
     } else if (command === "remove") {
+      checkArgCount(
+        args,
+        1,
+        `Leave only one index, for example: remove ${args.at(0)}`,
+      );
       const id = parseId(args[0]);
       const tasks = removeTask(await loadTasks(filePath), id);
       await saveTasks(filePath, tasks);
       console.log(`Removed task ${id}`);
     } else if (command === "done") {
+      checkArgCount(
+        args,
+        1,
+        `Leave only one index, for example: done ${args.at(0)}`,
+      );
       const id = parseId(args[0]);
       const tasks = completeTask(await loadTasks(filePath), id);
       await saveTasks(filePath, tasks);
