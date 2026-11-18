@@ -6,6 +6,21 @@ const filePath =
   process.env.TODO_FILE ??
   path.join(import.meta.dirname, "..", "output", "tasks.json");
 
+type Command = "add" | "list" | "done" | "remove" | "help";
+
+type CommandInfo = {
+  usage: string;
+  description: string;
+};
+
+const commands: Record<Command, CommandInfo> = {
+  add: { usage: 'add "<title>"', description: "Add a new task" },
+  list: { usage: "list", description: "Show all tasks" },
+  done: { usage: 'done "<id>"', description: "Mark a task as done" },
+  remove: { usage: 'remove "<id>"', description: "Delete the task by ID" },
+  help: { usage: "help", description: "Shows all available commands" },
+};
+
 function parseId(arg: string | undefined): number {
   if (arg === undefined) {
     throw new Error("ID not specified");
@@ -23,10 +38,21 @@ function checkArgCount(args: string[], maxArgs: number, hint: string): void {
   }
 }
 
+function formatHelp(): string {
+  return Object.entries(commands)
+    .map(([command, commandInfo]) => `${command} - ${commandInfo.description}`)
+    .join("\n");
+}
+
 async function main(): Promise<void> {
   try {
     const [command, ...args] = process.argv.slice(2);
     if (command === "list") {
+      checkArgCount(
+        args,
+        0,
+        `This command does not require any arguments: ${commands.list.usage}`,
+      );
       const tasks = await loadTasks(filePath);
       console.log(formatTasks(tasks));
     } else if (command === "add") {
@@ -66,6 +92,14 @@ async function main(): Promise<void> {
       const tasks = completeTask(await loadTasks(filePath), id);
       await saveTasks(filePath, tasks);
       console.log(`Completed task ${id}`);
+    } else if (command === "help") {
+      checkArgCount(
+        args,
+        0,
+        `This command does not require any arguments: ${commands.help.usage}`,
+      );
+      const descriptions = formatHelp();
+      console.log(descriptions);
     } else {
       if (command !== undefined) {
         throw new Error(`Unknown command: ${command}`);
