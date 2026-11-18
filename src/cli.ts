@@ -16,9 +16,9 @@ type CommandInfo = {
 const commands: Record<Command, CommandInfo> = {
   add: { usage: 'add "<title>"', description: "Add a new task" },
   list: { usage: "list", description: "Show all tasks" },
-  done: { usage: 'done "<id>"', description: "Mark a task as done" },
-  remove: { usage: 'remove "<id>"', description: "Delete the task by ID" },
-  help: { usage: "help", description: "Shows all available commands" },
+  done: { usage: "done <id>", description: "Mark a task as done" },
+  remove: { usage: "remove <id>", description: "Delete the task by ID" },
+  help: { usage: "help", description: "Show all available commands" },
 };
 
 function parseId(arg: string | undefined): number {
@@ -40,7 +40,10 @@ function checkArgCount(args: string[], maxArgs: number, hint: string): void {
 
 function formatHelp(): string {
   return Object.entries(commands)
-    .map(([command, commandInfo]) => `${command} - ${commandInfo.description}`)
+    .map(
+      ([command, commandInfo]) =>
+        `${commandInfo.usage} - ${commandInfo.description}`,
+    )
     .join("\n");
 }
 
