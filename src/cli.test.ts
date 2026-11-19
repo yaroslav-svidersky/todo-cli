@@ -5,7 +5,6 @@ import { promisify } from "node:util";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { dir } from "node:console";
 
 const run = promisify(execFile);
 const cliPath = path.join(import.meta.dirname, "cli.ts");
@@ -15,27 +14,23 @@ async function makeTodoFile(): Promise<string> {
   return path.join(dir, "tasks.json");
 }
 
+async function runCli(todoFile: string, args: string[]) {
+  return await run(process.execPath, [cliPath, ...args], {
+    env: { ...process.env, TODO_FILE: todoFile },
+  });
+}
+
 describe("cli", () => {
   test("adds a task", async () => {
     const todoFile = await makeTodoFile();
-    const { stdout } = await run(
-      process.execPath,
-      [cliPath, "add", "Buy bread"],
-      {
-        env: { ...process.env, TODO_FILE: todoFile },
-      },
-    );
+    const { stdout } = await runCli(todoFile, ["add", "Buy bread"]);
     assert.equal(stdout, "Added task 1\n");
   });
 
   test("there is an additional item on the list", async () => {
     const todoFile = await makeTodoFile();
-    await run(process.execPath, [cliPath, "add", "Buy bread"], {
-      env: { ...process.env, TODO_FILE: todoFile },
-    });
-    const { stdout } = await run(process.execPath, [cliPath, "list"], {
-      env: { ...process.env, TODO_FILE: todoFile },
-    });
+    await runCli(todoFile, ["add", "Buy bread"]);
+    const { stdout } = await runCli(todoFile, ["list"]);
     assert.equal(stdout, "[ ] 1. Buy bread\n");
   });
 
@@ -43,9 +38,7 @@ describe("cli", () => {
     const todoFile = await makeTodoFile();
     await assert.rejects(
       async () => {
-        await run(process.execPath, [cliPath, "update"], {
-          env: { ...process.env, TODO_FILE: todoFile },
-        });
+        await runCli(todoFile, ["update"]);
       },
       {
         code: 1,
@@ -58,9 +51,7 @@ describe("cli", () => {
     const todoFile = await makeTodoFile();
     await assert.rejects(
       async () => {
-        await run(process.execPath, [cliPath, "add", "Buy", "bread"], {
-          env: { ...process.env, TODO_FILE: todoFile },
-        });
+        await runCli(todoFile, ["add", "Buy", "bread"]);
       },
       {
         code: 1,

@@ -3,7 +3,6 @@ import assert from "node:assert/strict";
 import os from "node:os";
 import fs from "node:fs/promises";
 import path from "node:path";
-import type { Task } from "./tasks.ts";
 import { loadTasks, saveTasks } from "./storage.ts";
 
 describe("loadTasks&saveTasks", () => {
